@@ -124,28 +124,61 @@
       font-weight: 600;
       color: #53627a;
     }
-    .product-quantity-section {
+    .product-info-section {
       background: #f0f4ff;
       border-radius: 16px;
       padding: 1rem 1.5rem;
       margin-top: 1.5rem;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 2rem;
       flex-wrap: wrap;
     }
-    .product-quantity-section label {
+    .product-quantity-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .product-quantity-group label {
       font-weight: 700;
       color: #1e3a8a;
       font-size: 1.1rem;
+      white-space: nowrap;
     }
-    .product-quantity-section input {
+    .product-quantity-group input {
       padding: 0.7rem 1rem;
       border: 1.5px solid #d7dee8;
       border-radius: 14px;
       font-size: 1.1rem;
-      width: 120px;
+      width: 100px;
       text-align: center;
+    }
+    .single-weight-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      border-radius: 14px;
+      padding: 0.5rem 1rem;
+      border: 1.5px solid #d7dee8;
+    }
+    .single-weight-box label {
+      font-weight: 700;
+      color: #1e3a8a;
+      font-size: 1rem;
+      white-space: nowrap;
+    }
+    .single-weight-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      min-width: 80px;
+      text-align: center;
+    }
+    .single-weight-unit {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #53627a;
     }
     .result-panel {
       background: #eef2ff;
@@ -156,17 +189,29 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
+      gap: 1rem;
+    }
+    .result-item {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+    .result-label {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      margin-right: 0.5rem;
     }
     .total-weight {
-      font-size: 2.4rem;
+      font-size: 2rem;
       font-weight: 800;
       color: #0c2d6b;
     }
     .total-unit {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
       color: #394e7a;
-      margin-left: 0.6rem;
+      margin-left: 0.4rem;
     }
     .button-group {
       display: flex;
@@ -228,6 +273,8 @@
       font-weight: 700;
       color: #0c2d6b;
       margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
     .history-detail {
       font-size: 0.85rem;
@@ -253,6 +300,9 @@
       .weight-column {
         align-items: center;
         justify-content: flex-start;
+      }
+      .product-info-section {
+        gap: 1rem;
       }
     }
   </style>
@@ -289,17 +339,24 @@
   </div>
   <div id="pipeContainer"></div>
 
-  <div class="product-quantity-section">
-    <label>Product Quantity · 产品数量</label>
-    <input type="number" id="productQuantity" min="1" value="1" step="1">
+  <div class="product-info-section">
+    <div class="product-quantity-group">
+      <label>Product Quantity · 产品数量</label>
+      <input type="number" id="productQuantity" min="1" value="1" step="1">
+    </div>
+    <div class="single-weight-box">
+      <label>Single Unit Weight · 单件重量:</label>
+      <span class="single-weight-value" id="singleWeightDisplay">0.00</span>
+      <span class="single-weight-unit">kg</span>
+    </div>
   </div>
 
   <div class="result-panel">
-    <div style="display: flex; align-items: baseline; flex-wrap: wrap;">
+    <div class="result-item">
+      <span class="result-label">Total Weight · 总重量:</span>
       <span class="total-weight" id="totalWeightDisplay">0.00</span>
       <span class="total-unit">kg</span>
     </div>
-    <div style="font-size: 0.9rem; color: #2c3e5c; font-weight: 500;">Total Weight · 总重量</div>
   </div>
 
   <div class="button-group">
@@ -334,6 +391,7 @@
     const plateContainer = document.getElementById('plateContainer');
     const pipeContainer = document.getElementById('pipeContainer');
     const totalWeightDisplay = document.getElementById('totalWeightDisplay');
+    const singleWeightDisplay = document.getElementById('singleWeightDisplay');
     const errorMessageDiv = document.getElementById('errorMessage');
     const productQuantityInput = document.getElementById('productQuantity');
     const calcBtn = document.getElementById('calcBtn');
@@ -493,18 +551,30 @@
       return { productWeight, hasInvalidInput, errorMsg };
     }
 
-    function calculateTotalWeight() {
+    function calculateWeights() {
       const productQty = parseFloat(productQuantityInput.value) || 1;
       const result = calculateSingleProductWeight();
       if (result.hasInvalidInput) {
-        return { totalWeight: 0, hasInvalidInput: true, errorMsg: result.errorMsg, productWeight: 0 };
+        return { 
+          singleWeight: 0, 
+          totalWeight: 0, 
+          hasInvalidInput: true, 
+          errorMsg: result.errorMsg 
+        };
       }
-      const totalWeight = result.productWeight * productQty;
-      return { totalWeight, hasInvalidInput: false, errorMsg: '', productWeight: result.productWeight };
+      const singleWeight = result.productWeight;
+      const totalWeight = singleWeight * productQty;
+      return { 
+        singleWeight, 
+        totalWeight, 
+        hasInvalidInput: false, 
+        errorMsg: '' 
+      };
     }
 
-    function updateTotalDisplay(total) {
-      totalWeightDisplay.textContent = total.toFixed(2);
+    function updateWeightDisplays(singleWeight, totalWeight) {
+      singleWeightDisplay.textContent = singleWeight.toFixed(2);
+      totalWeightDisplay.textContent = totalWeight.toFixed(2);
     }
 
     function clearError() { errorMessageDiv.innerHTML = ''; }
@@ -542,7 +612,7 @@
       return { plates, pipes };
     }
 
-    function formatHistoryDetail(data, productQty) {
+    function formatHistoryDetail(data, productQty, singleWeight) {
       let detail = '';
       if (data.plates.length > 0) {
         detail += '📐 Plates:\n';
@@ -558,13 +628,15 @@
       }
       if (detail === '') detail = 'No dimension data recorded.';
       detail += `\n📦 Product Quantity: ${productQty}`;
+      detail += `\n⚖️ Single Unit Weight: ${singleWeight.toFixed(2)} kg`;
       return detail;
     }
 
-    function addHistoryRecord(totalWeight, data, productQty) {
+    function addHistoryRecord(singleWeight, totalWeight, data, productQty) {
       const now = new Date();
       const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       historyRecords.push({
+        singleWeight: singleWeight,
         total: totalWeight,
         time: timeStr,
         data: data,
@@ -581,7 +653,7 @@
       }
       let html = '';
       historyRecords.forEach((record, index) => {
-        const detail = formatHistoryDetail(record.data, record.productQty);
+        const detail = formatHistoryDetail(record.data, record.productQty, record.singleWeight);
         html += `<div class="history-entry">
           <div class="history-header">
             <span>#${index + 1} · ${record.time}</span>
@@ -595,17 +667,17 @@
 
     calcBtn.addEventListener('click', function() {
       updateRowWeightDisplays();
-      const result = calculateTotalWeight();
+      const result = calculateWeights();
       if (result.hasInvalidInput) {
         showError(result.errorMsg || 'Please check your inputs.');
-        updateTotalDisplay(0);
+        updateWeightDisplays(0, 0);
       } else {
         clearError();
-        updateTotalDisplay(result.totalWeight);
+        updateWeightDisplays(result.singleWeight, result.totalWeight);
         if (result.totalWeight > 0) {
           const productQty = parseFloat(productQuantityInput.value) || 1;
           const currentData = collectCurrentData();
-          addHistoryRecord(result.totalWeight, currentData, productQty);
+          addHistoryRecord(result.singleWeight, result.totalWeight, currentData, productQty);
         }
       }
     });
@@ -614,7 +686,7 @@
       document.querySelectorAll('input[type="number"]').forEach(input => { input.value = ''; });
       document.querySelectorAll('select.plate-thickness').forEach(select => { select.selectedIndex = 0; });
       productQuantityInput.value = '1';
-      totalWeightDisplay.textContent = '0.00';
+      updateWeightDisplays(0, 0);
       clearError();
       updateRowWeightDisplays();
     });
