@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Product Weight Calculator · 重量计算器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f5f7fc;
+      font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+
+    .calculator-container {
+      background: #ffffff;
+      max-width: 1100px;
+      width: 100%;
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 6px 12px rgba(0, 0, 0, 0.05);
+      padding: 2rem 2rem 2.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .notice-panel {
+      background: #fef9e7;
+      border-left: 6px solid #e6b800;
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .notice-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #4e3e00;
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .notice-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .notice-list li {
+      font-size: 0.95rem;
+      color: #3b3b3b;
+      line-height: 1.5;
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 0.6rem;
+    }
+
+    .notice-list .en {
+      font-weight: 600;
+      color: #1f2a44;
+    }
+
+    .notice-list .zh {
+      color: #4f4f4f;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #0b1f3a;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 0.5rem;
+    }
+
+    .grid-plates {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .plate-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 0.8rem 1rem;
+      background: #f8fafd;
+      padding: 0.9rem 1.2rem;
+      border-radius: 20px;
+      border: 1px solid #e9edf4;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 110px;
+      flex: 1 0 100px;
+    }
+
+    .input-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #53627a;
+    }
+
+    .input-group input {
+      padding: 0.65rem 0.8rem;
+      border: 1.5px solid #d7dee8;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      background: white;
+      transition: 0.2s;
+    }
+
+    .input-group input:focus {
+      border-color: #1e3a8a;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    }
+
+    .pipe-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 1.8rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .pipe-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 0.8rem 1rem;
+      background: #f1f5fb;
+      padding: 0.9rem 1.2rem;
+      border-radius: 20px;
+      border: 1px solid #dce3ed;
+    }
+
+    .pipe-row .input-group {
+      min-width: 130px;
+      flex: 1 0 120px;
+    }
+
+    .result-panel {
+      background: #eef2ff;
+      border-radius: 24px;
+      padding: 1.5rem 1.8rem;
+      margin-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.02);
+    }
+
+    .total-weight {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #0c2d6b;
+      line-height: 1.2;
+    }
+
+    .total-unit {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #394e7a;
+      margin-left: 0.6rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: none;
+      padding: 0.85rem 2rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-calculate {
+      background: #1e3a8a;
+      color: white;
+      box-shadow: 0 8px 18px rgba(30, 58, 138, 0.3);
+    }
+
+    .btn-calculate:hover {
+      background: #142c6b;
+      transform: translateY(-2px);
+    }
+
+    .btn-reset {
+      background: #e2e8f0;
+      color: #1e293b;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .btn-reset:hover {
+      background: #cbd5e1;
+      transform: translateY(-2px);
+    }
+
+    .error-message {
+      color: #b91c1c;
+      background: #fee2e2;
+      padding: 0.4rem 1rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-top: 0.5rem;
+      display: inline-block;
+    }
+
+    @media (max-width: 650px) {
+      .calculator-container {
+        padding: 1.5rem 1rem;
+      }
+      .plate-row, .pipe-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .total-weight {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="calculator-container">
+  <!-- 中英提醒区 (优化后) -->
+  <div class="notice-panel">
+    <div class="notice-title">📋 物流与交付提醒 · Delivery & Invoice Notes</div>
+    <ul class="notice-list">
+      <li><span class="en">1. Morning or evening delivery? </span><span class="zh">（早上送还是晚上送？）</span></li>
+      <li><span class="en">2. Is the DO for Designer / Main Contractor / Sub Contractor or Owner? Can invoice be issued? </span><span class="zh">（DO 是给 Designer / Main Contractor / Sub Contractor 还是 Owner？能开 Invoice 吗？）</span></li>
+      <li><span class="en">3. Delivery address? Same as system? </span><span class="zh">（送货地址是哪里？跟 system 一样吗？）</span></li>
+      <li><span class="en">4. Claim deposit / final / full payment? </span><span class="zh">（申请 Deposit / Final / Full Payment 吗？）</span></li>
+      <li><span class="en">5. Transportation for delivery booked? </span><span class="zh">（订送货的 Transportation 了吗？）</span></li>
+      <li><span class="en">6. Kwali Range weight is 80–120 kg. If included, please add manually. </span><span class="zh">（Kwali Range 的重量是 80–120 kg，有的话请自行加入。）</span></li>
+    </ul>
+  </div>
+
+  <!-- Plate 计算区域 -->
+  <div class="section-title">📐 Plate Dimensions · 板材尺寸</div>
+  <div class="grid-plates" id="plateContainer">
+    <!-- 默认6行 plate 输入，长x宽+厚度+数量 -->
+  </div>
+
+  <!-- Square Hollow / Round Pipe 区域 -->
+  <div class="section-title" style="margin-top: 2rem;">🔩 Square Hollow / Round Pipe · 方管/圆管</div>
+  <div class="pipe-section" id="pipeContainer">
+    <!-- 两个 pipe 输入行 -->
+  </div>
+
+  <!-- 结果显示 & 按钮 -->
+  <div class="result-panel">
+    <div style="display: flex; align-items: baseline; flex-wrap: wrap;">
+      <span class="total-weight" id="totalWeightDisplay">0.00</span>
+      <span class="total-unit">kg</span>
+    </div>
+    <div style="font-size: 0.9rem; color: #2c3e5c; font-weight: 500;">Total Weight · 总重量</div>
+  </div>
+
+  <div class="button-group">
+    <button class="btn btn-reset" id="resetBtn">⟲ Reset / 重置</button>
+    <button class="btn btn-calculate" id="calcBtn">⚖️ Calculate / 计算</button>
+  </div>
+  <div id="errorMessage" style="margin-top: 0.8rem; min-height: 2rem;"></div>
+</div>
+
+<script>
+  (function() {
+    // ----- 常量定义 (基础数据) -----
+    const PLATE_LENGTH_MM = 2438.4;   // 8ft
+    const PLATE_WIDTH_MM = 1219.2;    // 4ft
+    const PLATE_THICKNESS_MM = 1.2;
+    const PLATE_WEIGHT_KG = 30;       // 参考重量
+
+    // 每平方毫米单位重量 (kg/mm²) = 30 / (2438.4 * 1219.2 * 1.2)
+    const PLATE_WEIGHT_PER_CUBIC_MM = PLATE_WEIGHT_KG / (PLATE_LENGTH_MM * PLATE_WIDTH_MM * PLATE_THICKNESS_MM);
+
+    // Pipe 基础: 6000mm 对应 5kg
+    const PIPE_LENGTH_REF_MM = 6000;
+    const PIPE_WEIGHT_REF_KG = 5;
+    const PIPE_WEIGHT_PER_MM = PIPE_WEIGHT_REF_KG / PIPE_LENGTH_REF_MM; // kg per mm
+
+    // 组件引用
+    const plateContainer = document.getElementById('plateContainer');
+    const pipeContainer = document.getElementById('pipeContainer');
+    const totalWeightDisplay = document.getElementById('totalWeightDisplay');
+    const errorMessageDiv = document.getElementById('errorMessage');
+    const calcBtn = document.getElementById('calcBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // 默认 plate 行数 6 和 pipe 行数 2
+    const PLATE_ROWS = 6;
+    const PIPE_ROWS = 2;
+
+    // 生成plate输入行
+    function createPlateRow(index) {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'plate-row';
+      rowDiv.dataset.plateIndex = index;
+
+      // 长度
+      const lengthGroup = document.createElement('div');
+      lengthGroup.className = 'input-group';
+      lengthGroup.innerHTML = `<label>Length (mm) · 长度</label><input type="number" step="any" min="0" placeholder="e.g. 2438.4" class="plate-length">`;
+      
+      // 宽度
+      const widthGroup = document.createElement('div');
+      widthGroup.className = 'input-group';
+      widthGroup.innerHTML = `<label>Width (mm) · 宽度</label><input type="number" step="any" min="0" placeholder="e.g. 1219.2" class="plate-width">`;
+      
+      // 厚度
+      const thicknessGroup = document.createElement('div');
+      thicknessGroup.className = 'input-group';
+      thicknessGroup.innerHTML = `<label>Thickness (mm) · 厚度</label><input type="number" step="any" min="0" placeholder="e.g. 1.2" class="plate-thickness">`;
+      
+      // 数量
+      const qtyGroup = document.createElement('div');
+      qtyGroup.className = 'input-group';
+      qtyGroup.innerHTML = `<label>Pieces · 数量</label><input type="number" step="any" min="0" placeholder="0" class="plate-qty">`;
+
+      rowDiv.appendChild(lengthGroup);
+      rowDiv.appendChild(widthGroup);
+      rowDiv.appendChild(thicknessGroup);
+      rowDiv.appendChild(qtyGroup);
+      return rowDiv;
+    }
+
+    // 生成pipe输入行
+    function createPipeRow(index) {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'pipe-row';
+      rowDiv.dataset.pipeIndex = index;
+
+      // 类型选择 (仅用于辨识，重量计算按长度)
+      const typeGroup = document.createElement('div');
+      typeGroup.className = 'input-group';
+      typeGroup.innerHTML = `<label>Type · 类型</label>
+        <select class="pipe-type" style="padding: 0.65rem 0.8rem; border: 1.5px solid #d7dee8; border-radius: 14px; background: white;">
+          <option value="square">Square Hollow</option>
+          <option value="round">Round Pipe</option>
+        </select>`;
+
+      // 长度 (mm)
+      const lengthGroup = document.createElement('div');
+      lengthGroup.className = 'input-group';
+      lengthGroup.innerHTML = `<label>Length (mm) · 长度</label><input type="number" step="any" min="0" placeholder="e.g. 6000" class="pipe-length">`;
+
+      rowDiv.appendChild(typeGroup);
+      rowDiv.appendChild(lengthGroup);
+      return rowDiv;
+    }
+
+    // 初始化DOM
+    function renderInputs() {
+      // 清空容器
+      plateContainer.innerHTML = '';
+      pipeContainer.innerHTML = '';
+
+      for (let i = 0; i < PLATE_ROWS; i++) {
+        plateContainer.appendChild(createPlateRow(i));
+      }
+
+      for (let i = 0; i < PIPE_ROWS; i++) {
+        pipeContainer.appendChild(createPipeRow(i));
+      }
+    }
+
+    // 从输入读取数据并计算总重量
+    function calculateTotalWeight() {
+      let totalWeight = 0;
+      let hasInvalidInput = false;
+      let errorMsg = '';
+
+      // 处理所有 plate 行
+      const plateRows = document.querySelectorAll('.plate-row');
+      plateRows.forEach((row, idx) => {
+        const lengthInput = row.querySelector('.plate-length');
+        const widthInput = row.querySelector('.plate-width');
+        const thicknessInput = row.querySelector('.plate-thickness');
+        const qtyInput = row.querySelector('.plate-qty');
+
+        const lengthVal = parseFloat(lengthInput.value);
+        const widthVal = parseFloat(widthInput.value);
+        const thicknessVal = parseFloat(thicknessInput.value);
+        const qtyVal = parseFloat(qtyInput.value);
+
+        // 如果四个都是空或0则跳过
+        if (isNaN(lengthVal) && isNaN(widthVal) && isNaN(thicknessVal) && isNaN(qtyVal)) return;
+        
+        // 检查是否部分填写缺失
+        const filledCount = [lengthVal, widthVal, thicknessVal, qtyVal].filter(v => !isNaN(v) && v > 0).length;
+        const allFieldsEmpty = [lengthVal, widthVal, thicknessVal, qtyVal].every(v => isNaN(v) || v === 0);
+        
+        if (allFieldsEmpty) return; // 完全空行跳过
+
+        // 如果有任何字段是NaN或负数，则提示错误
+        if (isNaN(lengthVal) || isNaN(widthVal) || isNaN(thicknessVal) || isNaN(qtyVal) || 
+            lengthVal < 0 || widthVal < 0 || thicknessVal < 0 || qtyVal < 0) {
+          hasInvalidInput = true;
+          errorMsg = `Plate row ${idx+1}: Please enter valid non-negative numbers for length, width, thickness, and quantity.`;
+          return;
+        }
+
+        // 如果只有部分填了且部分为空 (NaN 转为0处理吗? 但用户可能忘记填数量，按1?)
+        // 为了友好，若qty为空但其他有值，默认数量为1? 不，要求明确。这里如果缺失数量则警告。
+        const length = isNaN(lengthVal) ? 0 : lengthVal;
+        const width = isNaN(widthVal) ? 0 : widthVal;
+        const thickness = isNaN(thicknessVal) ? 0 : thicknessVal;
+        const qty = isNaN(qtyVal) ? 0 : qtyVal;
+
+        if (length === 0 || width === 0 || thickness === 0 || qty === 0) {
+          if (!(length === 0 && width === 0 && thickness === 0 && qty === 0)) {
+            // 部分填了0或者空，提醒可能忘填
+            hasInvalidInput = true;
+            errorMsg = `Plate row ${idx+1}: All fields must be positive numbers (or leave the entire row empty).`;
+          }
+          return;
+        }
+
+        // 计算板重量 (kg) = 长*宽*厚 * 每立方毫米重量 * 数量
+        const volumeMm3 = length * width * thickness;
+        const weightPerPiece = volumeMm3 * PLATE_WEIGHT_PER_CUBIC_MM;
+        totalWeight += weightPerPiece * qty;
+      });
+
+      // 处理所有 pipe 行
+      const pipeRows = document.querySelectorAll('.pipe-row');
+      pipeRows.forEach((row, idx) => {
+        const lengthInput = row.querySelector('.pipe-length');
+        const lengthVal = parseFloat(lengthInput.value);
+
+        if (isNaN(lengthVal)) {
+          // 空行跳过
+          if (lengthInput.value.trim() === '') return;
+          else {
+            hasInvalidInput = true;
+            errorMsg = `Pipe row ${idx+1}: Please enter a valid length (mm).`;
+            return;
+          }
+        }
+        if (lengthVal < 0) {
+          hasInvalidInput = true;
+          errorMsg = `Pipe row ${idx+1}: Length cannot be negative.`;
+          return;
+        }
+        if (lengthVal === 0) return; // 0 视为无效但忽略
+
+        const pipeWeight = lengthVal * PIPE_WEIGHT_PER_MM;
+        totalWeight += pipeWeight;
+      });
+
+      return { totalWeight, hasInvalidInput, errorMsg };
+    }
+
+    // 更新显示
+    function updateDisplay(total) {
+      if (totalWeightDisplay) {
+        totalWeightDisplay.textContent = total.toFixed(2);
+      }
+    }
+
+    // 清除错误信息
+    function clearError() {
+      errorMessageDiv.innerHTML = '';
+    }
+
+    // 显示错误
+    function showError(msg) {
+      if (msg) {
+        errorMessageDiv.innerHTML = `<span class="error-message">⚠️ ${msg}</span>`;
+      } else {
+        clearError();
+      }
+    }
+
+    // 计算按钮点击
+    calcBtn.addEventListener('click', function() {
+      const result = calculateTotalWeight();
+      if (result.hasInvalidInput) {
+        showError(result.errorMsg || 'Please check your inputs.');
+        updateDisplay(0); // 或保持原来? 最好显示0
+        totalWeightDisplay.textContent = '0.00';
+      } else {
+        clearError();
+        updateDisplay(result.totalWeight);
+      }
+    });
+
+    // Reset 按钮: 清空所有输入和结果
+    resetBtn.addEventListener('click', function() {
+      // 清空所有 input
+      const allInputs = document.querySelectorAll('input[type="number"]');
+      allInputs.forEach(input => {
+        input.value = '';
+      });
+      // 重置 pipe 类型为默认第一个选项
+      const allSelects = document.querySelectorAll('select.pipe-type');
+      allSelects.forEach(select => {
+        select.selectedIndex = 0;
+      });
+      // 清空结果
+      totalWeightDisplay.textContent = '0.00';
+      clearError();
+    });
+
+    // 初始化渲染
+    renderInputs();
+
+    // 额外：输入时自动清除错误？简单处理：点击计算才显示错误，保持逻辑
+    // 也可以加上输入监听来删除错误提示，但可选。这里保持简洁。
+    // 添加输入事件清除错误提醒（可选）
+    document.addEventListener('input', function(e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+        if (errorMessageDiv.innerHTML !== '') {
+          clearError();
+        }
+      }
+    });
+
+  })();
+</script>
+</body>
+</html>
